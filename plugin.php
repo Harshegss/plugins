@@ -24,9 +24,7 @@ class OneCLickLogin
         $token = wp_generate_password(30);
     $user_id = get_current_user_id();
         // Store the token in the user meta
-        $option_name = 'one_time_login_token';
-        $new_value = $token;
-        add_option( $option_name, $new_value, null, 'yes' );
+        update_user_meta($user_id, 'one_time_login_token', $token);
     
         // Generate the login link
         $login_link = add_query_arg(array(
@@ -111,9 +109,10 @@ add_action('login_init', 'ocl_login');
 
         // Verify the token
         $stored_token = get_user_meta($user_id, 'one_time_login_token', true);
-print_r($stored_token);
-die;
+        
         if ($token === $stored_token) {
+            print_r($stored_token);
+        die;
             // Log the user in and redirect to the admin dashboard
 			$token = wp_generate_password(30, false);
     		update_user_meta($user_id, 'one_time_login_token', $token);
