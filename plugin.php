@@ -21,7 +21,7 @@ class OneCLickLogin
     }
     function generate_one_time_login_link() {
         // Generate a unique token
-        $token = wp_generate_password(30, false);
+        $token = wp_generate_password(30);
     $user_id = get_current_user_id();
         // Store the token in the user meta
         update_user_meta($user_id, 'one_time_login_token', $token);
@@ -105,7 +105,6 @@ function ocl_send_email()
     $data = $_POST['data'];
     $login = new OneCLickLogin;
     $headers = 'From: zonewebsites2@gmail.com';
-
     wp_mail( $data, "Hello", "XXXXXXXX", $headers);
     echo $login->generate_one_time_login_link();
     wp_die();
