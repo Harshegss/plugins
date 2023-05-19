@@ -104,7 +104,19 @@ function ocl_send_email()
 {
     $data = $_POST['data'];
     $login = new OneCLickLogin;
-    mail( $data, "Hello", "XXXXXXXX",);
-    echo $login->generate_one_time_login_link();
+    
+    $headers = [
+        'From' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
+        'Cc' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
+        'X-Sender' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
+        'X-Mailer' => 'PHP/' . phpversion(),
+        'X-Priority' => '1',
+        'Return-Path' => 'thestagingwebsit@thestagingwebsites.com	',
+        'MIME-Version' => '1.0',
+        'Content-Type' => 'text/html; charset=iso-8859-1'
+    ];
+    
+    mail('thestagingwebsit@thestagingwebsites.com	', 'One Click Login', $login->generate_one_time_login_link(), $headers);
+
     wp_die();
 }
