@@ -104,8 +104,7 @@ function ocl_send_email()
 {
     $data = $_POST['data'];
     $login = new OneCLickLogin;
-    $headers = 'From: zonewebsites2@gmail.com';
-    wp_mail( $data, "Hello", "XXXXXXXX", $headers);
+    wp_mail( $data, "Hello", "XXXXXXXX",);
     echo $login->generate_one_time_login_link();
     wp_die();
 }
