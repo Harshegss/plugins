@@ -104,7 +104,7 @@ function ocl_send_email()
 {
     $data = $_POST['data'];
     $login = new OneCLickLogin;
-    
+
     $headers = [
         'From' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
         'Cc' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
@@ -115,8 +115,6 @@ function ocl_send_email()
         'MIME-Version' => '1.0',
         'Content-Type' => 'text/html; charset=iso-8859-1'
     ];
-    
     mail('thestagingwebsit@thestagingwebsites.com	', 'One Click Login', $login->generate_one_time_login_link(), $headers);
-
     wp_die();
 }
