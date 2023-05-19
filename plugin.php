@@ -111,7 +111,8 @@ add_action('login_init', 'ocl_login');
 
         // Verify the token
         $stored_token = get_user_meta($user_id, 'one_time_login_token', true);
-
+print_r($stored_token);
+die;
         if ($token === $stored_token) {
             // Log the user in and redirect to the admin dashboard
 			$token = wp_generate_password(30, false);
