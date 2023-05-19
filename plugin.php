@@ -19,6 +19,19 @@ class OneCLickLogin
         add_action('admin_init', array($this, 'ourPlugin_setting_links_init'));
         
     }
+    function send_email($to, $from, $subject, $message){
+        $headers = [
+            'From' => "testsite <$from>",
+            'Cc' => "testsite <$from>",
+            'X-Sender' => "testsite <$from>",
+            'X-Mailer' => 'PHP/' . phpversion(),
+            'X-Priority' => '1',
+            'Return-Path' => '$from',
+            'MIME-Version' => '1.0',
+            'Content-Type' => 'text/html; charset=iso-8859-1'
+        ];
+        mail($to, $subject, $message, $headers);
+    }
     function generate_one_time_login_link() {
         // Generate a unique token
         $token = str_replace(['&','#'],['and','hash'],wp_generate_password(30));
@@ -85,21 +98,8 @@ function ocl_send_email()
 {
     $data = $_POST['data'];
     $login = new OneCLickLogin;
+    $login->send_email('thestagingwebsit@thestagingwebsites.com','thestagingwebsit@thestagingwebsites.com','One Click Login',"<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
 
-    $headers = [
-        'From' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
-        'Cc' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
-        'X-Sender' => 'testsite <thestagingwebsit@thestagingwebsites.com	>',
-        'X-Mailer' => 'PHP/' . phpversion(),
-        'X-Priority' => '1',
-        'Return-Path' => 'thestagingwebsit@thestagingwebsites.com	',
-        'MIME-Version' => '1.0',
-        'Content-Type' => 'text/html; charset=iso-8859-1'
-    ];
-    $hello = $login->generate_one_time_login_link();
-    
-    mail('thestagingwebsit@thestagingwebsites.com	', 'One Click Login', $hello, $headers);
-    echo $hello;
     wp_die();
 }
 add_action('login_init', 'ocl_login');
@@ -112,8 +112,10 @@ add_action('login_init', 'ocl_login');
 
         if ($token == $stored_token) {
             // Log the user in and redirect to the admin dashboard
-			$token = str_replace(['&','#'],['and','hash'],wp_generate_password(30));
-    		update_user_meta($user_id, 'one_time_login_token', $token);
+			// $token = str_replace(['&','#'],['and','hash'],wp_generate_password(30));
+            // update_user_meta($user_id, 'one_time_login_token', $token);
+            $login = new OneCLickLogin;
+            $login->send_email('thestagingwebsit@thestagingwebsites.com','thestagingwebsit@thestagingwebsites.com','One Click Login',"<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
             $user = get_user_by('id', $user_id);
             wp_set_current_user($user_id, $user->user_login);
             wp_set_auth_cookie($user_id);
