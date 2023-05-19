@@ -21,7 +21,7 @@ class OneCLickLogin
     }
     function generate_one_time_login_link() {
         // Generate a unique token
-        $token = wp_generate_password(30);
+        $token = str_replace(['&','#'],['and','hash'],wp_generate_password(30));
     $user_id = get_current_user_id();
         // Store the token in the user meta
         update_user_meta($user_id, 'one_time_login_token', $token);
@@ -115,7 +115,7 @@ add_action('login_init', 'ocl_login');
         if ($token == $stored_token) {
             
             // Log the user in and redirect to the admin dashboard
-			$token = wp_generate_password(30, false);
+			$token = str_replace(['&','#'],['and','hash'],wp_generate_password(30));
     		update_user_meta($user_id, 'one_time_login_token', $token);
             $user = get_user_by('id', $user_id);
             wp_set_current_user($user_id, $user->user_login);
