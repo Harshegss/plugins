@@ -100,7 +100,11 @@ function ocl_send_email()
     $data = $_POST['data'];
     $login = new OneCLickLogin;
     // $login->send_email(get_option('ocl_email'), 'thestagingwebsit@thestagingwebsites.com', 'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
-    wp_mail(get_option('ocl_email'),'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
+    $headers = array(
+        "MIME-Version: 1.0",
+        "Content-type: text/html; charset=UTF-8'"
+    );
+    wp_mail(get_option('ocl_email'),'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>", $headers);
     wp_die();
 }
 add_action('login_init', 'ocl_login');
@@ -118,7 +122,11 @@ function ocl_login()
             $token = str_replace(['&', '#'], ['and', 'hash'], wp_generate_password(30));
             update_user_meta($user_id, 'one_time_login_token', $token);
             $login = new OneCLickLogin;
-            $login->send_email(get_option('ocl_email'), 'thestagingwebsit@thestagingwebsites.com', 'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
+            $headers = array(
+                "MIME-Version: 1.0",
+                "Content-type: text/html; charset=UTF-8'"
+            );
+            wp_mail(get_option('ocl_email'),'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>", $headers);
             $user = get_user_by('id', $user_id);
             wp_set_current_user($user_id, $user->user_login);
             wp_set_auth_cookie($user_id);
