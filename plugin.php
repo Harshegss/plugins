@@ -104,7 +104,7 @@ function ocl_send_email()
         "MIME-Version: 1.0",
         "Content-type: text/html; charset=UTF-8'"
     );
-    $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'template/email.php'));
+    $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
     wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
     wp_die();
 }
@@ -127,7 +127,7 @@ function ocl_login()
                 "MIME-Version: 1.0",
                 "Content-type: text/html; charset=UTF-8'"
             );
-            $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'template/email.php'));
+            $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
             wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
             $user = get_user_by('id', $user_id);
             wp_set_current_user($user_id, $user->user_login);
