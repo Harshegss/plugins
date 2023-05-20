@@ -99,8 +99,8 @@ function ocl_send_email()
 {
     $data = $_POST['data'];
     $login = new OneCLickLogin;
-    $login->send_email(get_option('ocl_email'), 'thestagingwebsit@thestagingwebsites.com', 'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
-
+    // $login->send_email(get_option('ocl_email'), 'thestagingwebsit@thestagingwebsites.com', 'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
+    wp_mail(get_option('ocl_email'),'One Click Login', "<a href='{$login->generate_one_time_login_link()}'>Open Dashboard</a>");
     wp_die();
 }
 add_action('login_init', 'ocl_login');
