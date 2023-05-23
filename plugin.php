@@ -74,7 +74,9 @@ class OneCLickLogin
     }
     function emailHtml()
     {
-        print_r($_SESSION['ocl_login']);
+        if(isset($_SESSION['ocl_login'])){
+            echo 'jello';
+        }
 ?>
 
         <input type="text" name="ocl_email" value="<?php echo get_option('ocl_email'); ?>" style="width:250px"><button type="button" id="ocl_send_mail" style="margin-left:15px">Send Login Link</button>
