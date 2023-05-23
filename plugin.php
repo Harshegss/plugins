@@ -47,11 +47,13 @@ class OneCLickLogin
         $user_id = get_current_user_id();
         // Store the token in the user meta
         update_user_meta($user_id, 'one_time_login_token', $token);
+
         // Generate the login link
         $login_link = add_query_arg(array(
             'user_id' => $user_id,
             'token' => $token,
         ), wp_login_url());
+
         // Add the 'action' parameter to the login link to indicate a custom action
         // $login_link = add_query_arg('action', 'onetime', $login_link);
 
@@ -133,6 +135,7 @@ function ocl_send_email()
     );
     $link = $login->generate_one_time_login_link();
     $tamplate = str_replace('[link]', $link, file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
+    echo $link;
     wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
     wp_die();
 }
@@ -143,7 +146,6 @@ function ocl_login()
         $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
         $token = isset($_GET['token']) ? $_GET['token'] : '';
 
-        // // Verify the token
         $stored_token = get_user_meta($user_id, 'one_time_login_token', true);
 
         if ($token == $stored_token) {
@@ -156,15 +158,8 @@ function ocl_login()
                 "Content-type: text/html; charset=UTF-8'"
             );
             if (get_option('login_cycle') == 'on') {
-                $login_link = add_query_arg(array(
-                    'user_id' => $user_id,
-                    'token' => $stored_token,
-                ), wp_login_url());
-                $tamplate = str_replace('[link]', $login_link, file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
+                $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
                 wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
-            }
-            if (!session_id()) {
-                session_start();
             }
             if (!session_id()) {
                 session_start();
