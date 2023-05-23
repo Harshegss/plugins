@@ -5,7 +5,6 @@
         action: "ocl_send_email",
         data: $(this).siblings("input").val(),
       };
-
       $.ajax({
         url: ajaxurl,
         type: "POST",

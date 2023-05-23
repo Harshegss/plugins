@@ -34,7 +34,6 @@ class OneCLickLogin
     }
     function generate_one_time_login_link()
     {
-        // Generate a unique token
         $token = str_replace(['&', '#'], ['and', 'hash'], wp_generate_password(30));
         $user_id = get_current_user_id();
         // Store the token in the user meta
@@ -55,12 +54,17 @@ class OneCLickLogin
     function script_that_requires_jquery()
     {
         wp_enqueue_script('my_custom_script', plugins_url('asset/js/script.js', __FILE__), array('jquery'), '3.4.0', true);
+        wp_enqueue_style('admin-styles', plugins_url('asset/css/style.css', __FILE__));
     }
     function ourPlugin_setting_links_init()
     {
         add_settings_section('ocl_first_section', null, null, 'one-click-login-setting');
+
         add_settings_field("ocl_email", "Your Email ID", array($this, 'emailHtml'), 'one-click-login-setting', 'ocl_first_section');
         register_setting("one_click_login_plugin", 'ocl_email', array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
+
+        add_settings_field("login_cycle", "Login Cycle", array($this, 'logincycle'), 'one-click-login-setting', 'ocl_first_section');
+        register_setting("one_click_login_plugin", 'login_cycle', array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
     }
     function ourPlugin_setting_links()
     {
@@ -70,6 +74,12 @@ class OneCLickLogin
     {
 ?>
         <input type="text" name="ocl_email" value="<?php echo get_option('ocl_email'); ?>" style="width:250px"><button type="button" id="ocl_send_mail" style="margin-left:15px">Send Login Link</button>
+    <?php
+    }
+    function logincycle()
+    {
+?>
+        <input class="form-check-input" type="checkbox" name="login_cycle" role="switch" <?=get_option('login_cycle') == 'on' ? 'checked' : '';?> >
     <?php
     }
     function one_click_login_setting_html()
@@ -127,8 +137,10 @@ function ocl_login()
                 "MIME-Version: 1.0",
                 "Content-type: text/html; charset=UTF-8'"
             );
-            $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
-            wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
+            if(get_option('login_cycle') == 'on'){
+                $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
+                wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
+            }
             $user = get_user_by('id', $user_id);
             wp_set_current_user($user_id, $user->user_login);
             wp_set_auth_cookie($user_id);
