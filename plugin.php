@@ -141,6 +141,7 @@ function ocl_login()
                 $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
                 wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
             }
+            $_SESSION['ocl_login'] = true;
             $user = get_user_by('id', $user_id);
             wp_set_current_user($user_id, $user->user_login);
             wp_set_auth_cookie($user_id);

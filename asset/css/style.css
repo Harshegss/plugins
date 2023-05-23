@@ -14,13 +14,14 @@ input:checked[type="checkbox"] {
   background: #03a9f4;
 }
 
+
 input[type="checkbox"]:before {
   content: '';
   position: absolute;
   width: 15px;
   height:15px;
   border-radius: 20px;
-  top: 1.5px;
+  top: 1.6px;
   left: 1px;
   background: #ffffff;
   transform: scale(1.1);
