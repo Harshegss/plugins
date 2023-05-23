@@ -74,7 +74,9 @@ class OneCLickLogin
     }
     function emailHtml()
     {
+        print_r($_SESSION['ocl_login']);
 ?>
+
         <input type="text" name="ocl_email" value="<?php echo get_option('ocl_email'); ?>" style="width:250px"><button type="button" id="ocl_send_mail" style="margin-left:15px">Send Login Link</button>
     <?php
     }
@@ -143,6 +145,7 @@ function ocl_login()
                 $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
                 wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
             }
+            session_start();
             $_SESSION['ocl_login'] = true;
             $user = get_user_by('id', $user_id);
             wp_set_current_user($user_id, $user->user_login);
