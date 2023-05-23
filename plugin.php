@@ -15,7 +15,9 @@ class OneCLickLogin
         if (is_admin()) {
             add_action('admin_enqueue_scripts', array($this, 'script_that_requires_jquery'));
         }
-        add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
+        if(!isset($_SESSION['ocl_login'])){
+            add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
+        }
         add_action('admin_init', array($this, 'ourPlugin_setting_links_init'));
     }
     function send_email($to, $from, $subject, $message)
