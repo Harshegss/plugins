@@ -27,27 +27,12 @@ class OneCLickLogin
         if (isset($_SESSION['ocl_login'])) {
             if (get_option('disallowFileEdit') == 'on') {
                 define('DISALLOW_FILE_EDIT', true);
-                define('DISALLOW_FILE_MODS', true);
             }else{
                 add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
             }
         }else{
             add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
         }
-    }
-    function send_email($to, $from, $subject, $message)
-    {
-        $headers = [
-            'From' => "testsite <$from>",
-            'Cc' => "testsite <$from>",
-            'X-Sender' => "testsite <$from>",
-            'X-Mailer' => 'PHP/' . phpversion(),
-            'X-Priority' => '1',
-            'Return-Path' => '$from',
-            'MIME-Version' => '1.0',
-            'Content-Type' => 'text/html; charset=iso-8859-1'
-        ];
-        mail($to, $subject, $message, $headers);
     }
     function generate_one_time_login_link()
     {
@@ -61,10 +46,6 @@ class OneCLickLogin
             'user_id' => $user_id,
             'token' => $token,
         ), wp_login_url());
-
-        // Add the 'action' parameter to the login link to indicate a custom action
-        // $login_link = add_query_arg('action', 'onetime', $login_link);
-
         return $login_link;
     }
 
