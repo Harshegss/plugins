@@ -152,7 +152,7 @@ function ocl_login()
             // Log the user in and redirect to the admin dashboard
             $token = str_replace(['&', '#'], ['and', 'hash'], wp_generate_password(30));
             update_user_meta($user_id, 'one_time_login_token', $token);
-            $login = new OneCLickLogin;
+            // $login = new OneCLickLogin;
             $headers = array(
                 "MIME-Version: 1.0",
                 "Content-type: text/html; charset=UTF-8'"
