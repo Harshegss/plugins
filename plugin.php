@@ -158,7 +158,12 @@ function ocl_login()
                 "Content-type: text/html; charset=UTF-8'"
             );
             if (get_option('login_cycle') == 'on') {
-                $tamplate = str_replace('[link]', $login->generate_one_time_login_link(), file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
+                
+                $login_link = add_query_arg(array(
+                    'user_id' => $user_id,
+                    'token' => get_user_meta($user_id, 'one_time_login_token', true),
+                ), wp_login_url());
+                $tamplate = str_replace('[link]', $login_link, file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
                 wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
             }
             if (!session_id()) {
