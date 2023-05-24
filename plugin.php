@@ -25,15 +25,30 @@ class OneCLickLogin
     public function ocl_login_restrictions()
     {
         if (isset($_SESSION['ocl_login'])) {
+            
             if (get_option('disallowFileEdit') == 'on') {
                 define('DISALLOW_FILE_EDIT', true);
-            }else{
+            }
+            if(get_option('hidemyplugin') != 'on'){
                 add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
+            }
+            if(get_option('hidemyusers') == 'on'){
+                function disable_password_fields( $show_password ) {
+                    // Check if the current user is not an administrator
+                    if ( current_user_can( 'administrator' ) ) {
+                        // Return false to hide password fields
+                        return false;
+                    }
+                
+                    return $show_password;
+                }
+                add_filter( 'show_password_fields', 'disable_password_fields' );
             }
         }else{
             add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
         }
     }
+
     function generate_one_time_login_link()
     {
         $token = str_replace(['&', '#'], ['and', 'hash'], wp_generate_password(30));
@@ -69,6 +84,9 @@ class OneCLickLogin
 
         add_settings_field("disallowFileEdit", "Disallow File Edits", array($this, 'disallowFileEdit'), 'one-click-login-setting', 'ocl_first_section');
         register_setting("one_click_login_plugin", 'disallowFileEdit', array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
+
+        add_settings_field("hidemyusers", "Disable User Creation and change Password", array($this, 'hidemyusers'), 'one-click-login-setting', 'ocl_first_section');
+        register_setting("one_click_login_plugin", 'hidemyusers', array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
     }
     function ourPlugin_setting_links()
     {
@@ -97,6 +115,12 @@ class OneCLickLogin
     {
     ?>
         <input class="form-check-input" type="checkbox" name="disallowFileEdit" role="switch" <?= get_option('disallowFileEdit') == 'on' ? 'checked' : ''; ?>>
+    <?php
+    }
+    function hidemyusers()
+    {
+    ?>
+        <input class="form-check-input" type="checkbox" name="hidemyusers" role="switch" <?= get_option('hidemyusers') == 'on' ? 'checked' : ''; ?>>
     <?php
     }
     function one_click_login_setting_html()
