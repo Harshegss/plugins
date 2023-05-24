@@ -19,13 +19,6 @@ class OneCLickLogin
         if (is_admin()) {
             add_action('admin_enqueue_scripts', array($this, 'script_that_requires_jquery'));
         }
-        if (isset($_SESSION['ocl_login'])) {
-            if (get_option('hidemyplugin') != 'on') {
-                add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
-            }
-        } else {
-            add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
-        }
         add_action('admin_init', array($this, 'ourPlugin_setting_links_init'));
         $this->ocl_login_restrictions();
     }
@@ -35,7 +28,11 @@ class OneCLickLogin
             if (get_option('disallowFileEdit') == 'on') {
                 define('DISALLOW_FILE_EDIT', true);
                 define('DISALLOW_FILE_MODS', true);
+            }else{
+                add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
             }
+        }else{
+            add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
         }
     }
     function send_email($to, $from, $subject, $message)
