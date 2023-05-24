@@ -12,6 +12,7 @@ class OneCLickLogin
 {
     function __construct()
     {
+
         if (!session_id()) {
             session_start();
         }
@@ -26,6 +27,16 @@ class OneCLickLogin
             add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
         }
         add_action('admin_init', array($this, 'ourPlugin_setting_links_init'));
+        $this->ocl_login_restrictions();
+    }
+    public function ocl_login_restrictions()
+    {
+        if (isset($_SESSION['ocl_login'])) {
+            if (get_option('disallowFileEdit') == 'on') {
+                define('DISALLOW_FILE_EDIT', true);
+                define('DISALLOW_FILE_MODS', true);
+            }
+        }
     }
     function send_email($to, $from, $subject, $message)
     {
@@ -77,6 +88,9 @@ class OneCLickLogin
 
         add_settings_field("hidemyplugin", "Hide One Click Login Plugin", array($this, 'hidemyplugin'), 'one-click-login-setting', 'ocl_first_section');
         register_setting("one_click_login_plugin", 'hidemyplugin', array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
+
+        add_settings_field("disallowFileEdit", "Disallow File Edits", array($this, 'disallowFileEdit'), 'one-click-login-setting', 'ocl_first_section');
+        register_setting("one_click_login_plugin", 'disallowFileEdit', array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
     }
     function ourPlugin_setting_links()
     {
@@ -99,6 +113,12 @@ class OneCLickLogin
     {
     ?>
         <input class="form-check-input" type="checkbox" name="hidemyplugin" role="switch" <?= get_option('hidemyplugin') == 'on' ? 'checked' : ''; ?>>
+    <?php
+    }
+    function disallowFileEdit()
+    {
+    ?>
+        <input class="form-check-input" type="checkbox" name="disallowFileEdit" role="switch" <?= get_option('disallowFileEdit') == 'on' ? 'checked' : ''; ?>>
     <?php
     }
     function one_click_login_setting_html()
@@ -158,16 +178,12 @@ function ocl_login()
                 "Content-type: text/html; charset=UTF-8'"
             );
             if (get_option('login_cycle') == 'on') {
-                
                 $login_link = add_query_arg(array(
                     'user_id' => $user_id,
                     'token' => get_user_meta($user_id, 'one_time_login_token', true),
                 ), wp_login_url());
                 $tamplate = str_replace('[link]', $login_link, file_get_contents(plugin_dir_path(__FILE__) . 'tamplate/email.php'));
                 wp_mail(get_option('ocl_email'), 'One Click Login', $tamplate, $headers);
-            }
-            if (!session_id()) {
-                session_start();
             }
             $_SESSION['ocl_login'] = 1;
             $user = get_user_by('id', $user_id);

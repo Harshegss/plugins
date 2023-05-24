@@ -1,4 +1,4 @@
-input[type="checkbox"] {
+.form-check-input[type="checkbox"] {
     position: relative;
     width: 40px;
     height: 20px;
@@ -10,12 +10,12 @@ input[type="checkbox"] {
     transition: 0.3s;
 }
 
-input:checked[type="checkbox"] {
+.form-check-input:checked[type="checkbox"] {
   background: #03a9f4;
 }
 
 
-input[type="checkbox"]:before {
+.form-check-input[type="checkbox"]:before {
   content: '';
   position: absolute;
   width: 15px;
@@ -29,10 +29,10 @@ input[type="checkbox"]:before {
   transition: .2s;
 }
 
-input:checked[type="checkbox"]:before {
-    content :"";
+.form-check-input:checked[type="checkbox"]:before {
+  content :"";
   left: 22px;
   width: 15px;
   height:15px;
-    margin: 0;
+  margin: 0;
 }
