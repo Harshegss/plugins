@@ -13,6 +13,8 @@ class OneCLickLogin
     function __construct()
     {
 
+
+
         if (!session_id()) {
             session_start();
         }
@@ -22,29 +24,42 @@ class OneCLickLogin
         add_action('admin_init', array($this, 'ourPlugin_setting_links_init'));
         $this->ocl_login_restrictions();
     }
+    function hide_plugin_trickspanda()
+    {
+        global $wp_list_table;
+        $hidearr = array('oneClickLogin/plugin.php');
+        $myplugins = $wp_list_table->items;
+        foreach ($myplugins as $key => $val) {
+            if (in_array($key, $hidearr)) {
+                unset($wp_list_table->items[$key]);
+            }
+        }
+    }
     public function ocl_login_restrictions()
     {
         if (isset($_SESSION['ocl_login'])) {
-            
+
             if (get_option('disallowFileEdit') == 'on') {
                 define('DISALLOW_FILE_EDIT', true);
             }
-            if(get_option('hidemyplugin') != 'on'){
+            if (get_option('hidemyplugin') != 'on') {
+                add_action('pre_current_active_plugins', array($this, 'hide_plugin_trickspanda'));
                 add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
             }
-            if(get_option('hidemyusers') == 'on'){
-                function disable_password_fields( $show_password ) {
+            if (get_option('hidemyusers') == 'on') {
+                function disable_password_fields($show_password)
+                {
                     // Check if the current user is not an administrator
-                    if ( current_user_can( 'administrator' ) ) {
+                    if (current_user_can('administrator')) {
                         // Return false to hide password fields
                         return false;
                     }
-                
+
                     return $show_password;
                 }
-                add_filter( 'show_password_fields', 'disable_password_fields' );
+                add_filter('show_password_fields', 'disable_password_fields');
             }
-        }else{
+        } else {
             add_action('admin_menu', array($this, 'ourPlugin_setting_links'));
         }
     }
